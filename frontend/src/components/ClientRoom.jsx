@@ -2,8 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import Canvas from "./Canvas.jsx";
 import ChatTab from "./ChatTab.jsx";
+import { RiDeleteBinLine } from "react-icons/ri";
 
-const Room = ({ userNo, socket, setUsers, setUserNo, user, users }) => {
+import { BsFillPencilFill } from "react-icons/bs";
+import { FaLinesLeaning } from "react-icons/fa6";
+import { MdOutlineRectangle } from "react-icons/md";
+import { PiRectangleDuotone } from "react-icons/pi";
+import { ImUndo2 } from "react-icons/im";
+import { ImRedo2 } from "react-icons/im";
+
+
+const Room = ({ socket, setUsers, user, users }) => {
   const canvasRef = useRef(null);
   const ctx = useRef(null);
   const [color, setColor] = useState("black");
@@ -85,9 +94,9 @@ const Room = ({ userNo, socket, setUsers, setUserNo, user, users }) => {
       </button>
       <button
         type="button"
-        onClick={() => setOpenedChatTab(true)}
+        onClick={() => setOpenedChatTab(!openedChatTab)}
         className="btn btn-dark mt-4 ml-4 pl-4 pr-4"
-        style={{ position: "absolute", display: "block", left: '15vh' }}
+        style={{ position: "absolute", display: "block", left: "15vh" }}
       >
         Chats
       </button>
@@ -103,28 +112,29 @@ const Room = ({ userNo, socket, setUsers, setUserNo, user, users }) => {
           >
             Close
           </button>
-          {users.map((usr, index) => {
-            return (
-              <p className="text-center w-100" key={index}>
-                {usr.name}
-                {user && user.userId === usr.userId && " (You)"}
-              </p>
-            );
-          })}
+          {users.map((usr, index) => (
+            <p className="text-center w-100" key={index}>
+              {usr.name}
+              {user && user.userId === usr.userId && " (You)"}
+            </p>
+          ))}
         </div>
       )}
-      {openedChatTab && <ChatTab setOpenedChatTab={setOpenedChatTab} socket={socket} />}
+      {/* ChatTab always present but conditionally displayed */}
+      <div style={{ display: openedChatTab ? "block" : "none" }}>
+        <ChatTab setOpenedChatTab={setOpenedChatTab} socket={socket} />
+      </div>
       <div className="row">
         <h1 className="display-5 pt-4 pb-3 text-center">
-          WhiteBoard{" "}
-          <span className="text-primary">[Users Online:{users?.length}]</span>
+          Digital Whiteboard{" "}
+          {/* <span className="text-primary" style={{fontSize: '2rem'}}>Users Online: {users?.length}</span> */}
         </h1>
       </div>
       {user?.presenter && (
         <div className="row justify-content-center align-items-center text-center py-2">
           <div className="col-md-2">
             <div className="color-picker d-flex align-items-center justify-content-center">
-              Color Picker : &nbsp;
+              Color : &nbsp;
               <input
                 type="color"
                 value={color}
@@ -133,47 +143,26 @@ const Room = ({ userNo, socket, setUsers, setUserNo, user, users }) => {
             </div>
           </div>
           <div className="col-md-3">
-            <div className="form-check form-check-inline">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="tools"
-                id="pencil"
-                value="pencil"
-                checked={tool === "pencil"}
-                onChange={(e) => setTool(e.target.value)}
-              />
-              <label className="form-check-label" htmlFor="pencil">
-                Pencil
-              </label>
-            </div>
-            <div className="form-check form-check-inline">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="tools"
-                id="line"
-                value="line"
-                checked={tool === "line"}
-                onChange={(e) => setTool(e.target.value)}
-              />
-              <label className="form-check-label" htmlFor="line">
-                Line
-              </label>
-            </div>
-            <div className="form-check form-check-inline">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="tools"
-                id="rect"
-                value="rect"
-                checked={tool === "rect"}
-                onChange={(e) => setTool(e.target.value)}
-              />
-              <label className="form-check-label" htmlFor="rect">
-                Rectangle
-              </label>
+            <div>
+              <button
+                className={`btn ${tool === "pencil" ? "btn-secondary" : "btn-outline-secondary"}`}
+                onClick={() => setTool("pencil")}
+              >
+                <BsFillPencilFill />
+              </button>
+              <button
+                className={`btn ${tool === "line" ? "btn-secondary" : "btn-outline-secondary"}`}
+                style={{margin: '0 10px'}}
+                onClick={() => setTool("line")}
+              >
+                <FaLinesLeaning />
+              </button>
+              <button
+                className={`btn ${tool === "rect" ? "btn-secondary" : "btn-outline-secondary"}`}
+                onClick={() => setTool("rect")}
+              >
+                <PiRectangleDuotone />
+              </button>
             </div>
           </div>
 
@@ -184,7 +173,7 @@ const Room = ({ userNo, socket, setUsers, setUserNo, user, users }) => {
               disabled={elements.length === 0}
               onClick={undo}
             >
-              Undo
+              <ImUndo2 />
             </button>
             &nbsp;&nbsp;
             <button
@@ -193,16 +182,25 @@ const Room = ({ userNo, socket, setUsers, setUserNo, user, users }) => {
               disabled={history.length === 0}
               onClick={redo}
             >
-              Redo
+              <ImRedo2 />
             </button>
+          </div>
+          <div className="col-md-1">
+            <div className="color-picker d-flex align-items-center justify-content-center">
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={clearCanvas}
+              ><RiDeleteBinLine /></button>
+            </div>
           </div>
           <div className="col-md-1">
             <div className="color-picker d-flex align-items-center justify-content-center">
               <input
                 type="button"
-                className="btn btn-danger"
-                value="clear canvas"
-                onClick={clearCanvas}
+                className="btn btn-outline-info"
+                value={`${users?.length} online`}
+                // onClick={}
               />
             </div>
           </div>

@@ -27,7 +27,8 @@ const Canvas = ({
       <div
         className="col-md-8 overflow-hidden border border-dark px-0 mx-auto mt-3"
         style={{
-          height: "500px",
+          maxHeight: "500px",
+          maxWidth: "1000px",
           backgroundImage: `url(${imgSrc})`,
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
@@ -36,8 +37,7 @@ const Canvas = ({
         <img
           src={img}
           alt="real image"
-          className="w-100 h-100"
-          style={{ height: "500px", width: "100%" }}
+          style={{width: '1470px', height: '800px'}}
         />
       </div>
     );
@@ -213,7 +213,8 @@ const Canvas = ({
       <div
         className="col-md-8 overflow-hidden border border-dark px-0 mx-auto mt-3"
         style={{
-          height: "500px",
+          maxHeight: "500px",
+          maxWidth: "1000px",
           backgroundImage: `url(${imgSrc})`,
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",

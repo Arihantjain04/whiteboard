@@ -1,14 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const ChatTab = ({ setOpenedChatTab, socket }) => {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState([]);
 
   useEffect(() => {
-    socket.on("messageResponse", (data) => {
+    const handleMessageResponse = (data) => {
       setChat((prevChats) => [...prevChats, data]);
-    });
-  }, []);
+    };
+
+    socket.on("messageResponse", handleMessageResponse);
+
+    return () => {
+      socket.off("messageResponse", handleMessageResponse);
+    };
+  }, [socket]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,6 +24,7 @@ const ChatTab = ({ setOpenedChatTab, socket }) => {
       setMessage("");
     }
   };
+
   return (
     <div
       className="position-fixed top-0 h-100 text-white bg-dark p-4"
@@ -40,7 +47,7 @@ const ChatTab = ({ setOpenedChatTab, socket }) => {
         }}
       >
         {chat.map((msg, index) => (
-          <div key={index} style={{width: '100%', display: 'flex'}}>
+          <div key={index*999} style={{ width: '100%', display: 'flex' }}>
             <p className="text-center w-100">
               {msg.name} : {msg.message}
             </p>
